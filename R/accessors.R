@@ -555,6 +555,19 @@ setMethod("addPkg", "SessionManifest",
               x
           })
 
+
+.removePkgFromRepo <- function(repo, package) {
+    man <- manifest_df(repo)
+    if (!package %in% man$name)
+        stop("Package '", package, "' is not in the repo.")
+    manifest_df(repo) <- man[man$name != package,]
+    res <- repo_results(repo)
+    repo_results(repo) <- res[res$name != package,]
+    print(setdiff(manifest_df(repo)$name, repo_results(repo)$name))
+    print(setdiff(repo_results(repo)$name, manifest_df(repo)$name))
+    repo
+}
+
 ##' @title library_paths
 ##'
 ##' @description Accessor for which directories an SwitchrCtx is associated with.
