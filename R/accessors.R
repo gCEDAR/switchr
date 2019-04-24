@@ -557,10 +557,12 @@ setMethod("addPkg", "SessionManifest",
 
 
 .removePkgFromRepo <- function(repo, package) {
-    man <- manifest_df(repo)
-    if (!package %in% man$name)
-        stop("Package '", package, "' is not in the repo.")
-    manifest_df(repo) <- man[man$name != package,]
+    ## pkg_manifest and pkg_version
+    pm <- manifest_df(repo)
+    manifest_df(repo) <- pm[pm$name != package,]
+    pv <- manifest(repo)@pkg_versions
+    manifest(repo)@pkg_versions <- pv[pv$name != package,]
+    ## results
     res <- repo_results(repo)
     repo_results(repo) <- res[res$name != package,]
     print(setdiff(manifest_df(repo)$name, repo_results(repo)$name))
